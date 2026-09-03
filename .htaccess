@@ -1,0 +1,27 @@
+# Block direct HTTP access to the encrypted data/config files and the master key.
+# Even though these files are encrypted, they should never be reachable by URL at all.
+<IfModule mod_authz_core.c>
+    <FilesMatch "\.(json|key)$">
+        Require all denied
+    </FilesMatch>
+</IfModule>
+<IfModule !mod_authz_core.c>
+    <FilesMatch "\.(json|key)$">
+        Order allow,deny
+        Deny from all
+    </FilesMatch>
+</IfModule>
+
+# Also block dotfiles specifically (covers .arcade_secret.key even on odd configs).
+<FilesMatch "^\.">
+    <IfModule mod_authz_core.c>
+        Require all denied
+    </IfModule>
+    <IfModule !mod_authz_core.c>
+        Order allow,deny
+        Deny from all
+    </IfModule>
+</FilesMatch>
+
+# Don't let anyone browse the directory listing.
+Options -Indexes
