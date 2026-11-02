@@ -12,9 +12,10 @@ $firstAct = null; foreach ($state['waitlist'] as $p) { if (empty($p['afk'])) { $
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title><?= $cap['site_title'] ?></title>
+    <title><?= $view === 'love-letter' ? 'Love Letter — ' . $cap['site_title'] : $cap['site_title'] ?></title>
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22><?= $view === 'admin' ? $cap['admin_window_icon'] : $cap['window_icon'] ?></text></svg>">
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="love-letter.css">
     <style>
         .container { margin: 0 auto; width: 100%; padding: 0 12px; }
         .container-standard { max-width: 768px; } 
@@ -71,6 +72,7 @@ $firstAct = null; foreach ($state['waitlist'] as $p) { if (empty($p['afk'])) { $
                 <?php if ($view === 'display'): ?><h1 class="display-h1"><?= $cap['header_icon'] ?> <?= $cap['display_title'] ?> <?= $cap['header_icon'] ?></h1>
                 <?php elseif ($view === 'admin'): ?><h1><?= $cap['admin_header_icon'] ?> <?= $cap['admin_title'] ?></h1><div class="subtitle"><?= $cap['admin_subtitle'] ?></div>
                 <?php elseif ($view === 'password'): ?><h1><?= $cap['pw_setup_title'] ?></h1><div class="subtitle"><?= $cap['pw_setup_subtitle'] ?></div>
+                <?php elseif ($view === 'love-letter'): ?><h1>LOVE LETTER</h1><div class="subtitle">A 21-card game of royal intrigue</div>
                 <?php else: ?><h1><?= $cap['header_icon'] ?> <?= $cap['panel_title'] ?></h1><div class="subtitle"><?= $cap['panel_subtitle'] ?></div><?php endif; ?>
                 <div id="sys-time" class="datetime<?= $view === 'display' ? ' display-clock' : '' ?>"><?= $cap['sys_time'] ?>--:--:--</div>
             </div>
@@ -78,7 +80,7 @@ $firstAct = null; foreach ($state['waitlist'] as $p) { if (empty($p['afk'])) { $
         </div>
 
         <div id="main-content">
-            <?php if (!$isOpen && $view !== 'password'): ?>
+            <?php if (!$isOpen && $view !== 'password' && $view !== 'love-letter'): ?>
                 <div class="card" style="text-align: center; border-color: var(--red); width: 100%;">
                     <h2 style="color: var(--red); text-shadow: 0 0 10px var(--red); font-size: 1.5rem; text-align: center;"><?= $cap['arcade_closed_heading'] ?></h2>
                     <p style="font-size: 1.2rem; color: var(--cream); margin-top: 10px;"><?= sprintf($cap['arcade_closed_msg'], $state['op_open_time'], $state['op_close_time']) ?></p>
@@ -228,6 +230,9 @@ $firstAct = null; foreach ($state['waitlist'] as $p) { if (empty($p['afk'])) { $
                 </div>
                 <div class="operator-link-row"><a href="?view=admin" class="operator-link"><?= $cap['admin_back_link'] ?></a></div>
 
+            <?php elseif ($view === 'love-letter'): ?>
+                <?php include __DIR__ . '/love-letter-view.php'; ?>
+
             <?php elseif ($view === 'terminal'): ?>
                 <!-- TERMINAL VIEW -->
                 <?php if ($isOpen): ?>
@@ -324,6 +329,12 @@ $firstAct = null; foreach ($state['waitlist'] as $p) { if (empty($p['afk'])) { $
                     <button type="button" style="width:100%; margin-top:20px;" onclick="document.getElementById('guide-panel').style.display='none';"><?= $cap['guide_close_btn'] ?></button>
                 </div>
 
+                <div class="card ll-home-promo">
+                    <h2>Take a royal intermission</h2>
+                    <p>Play the current 21-card edition of Love Letter with 2–6 players on this device.</p>
+                    <a class="ll-home-link" href="?view=love-letter">Play Love Letter</a>
+                </div>
+
             <?php endif; ?>
         </div>
     </div>
@@ -335,6 +346,10 @@ $firstAct = null; foreach ($state['waitlist'] as $p) { if (empty($p['afk'])) { $
         };
     </script>
     <script src="script.js"></script>
+    <?php if ($view === 'love-letter'): ?>
+    <script src="love-letter-engine.js"></script>
+    <script src="love-letter.js"></script>
+    <?php endif; ?>
 
     <?php if ($view === 'terminal' && (!empty($cap['qr_link_1_url']) || !empty($cap['qr_link_2_url']))): ?>
     <div class="container container-standard" style="margin-top:-10px;">

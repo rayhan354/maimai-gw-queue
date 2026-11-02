@@ -1,0 +1,149 @@
+/* Love Letter add-on page. Kept separate so the queue UI remains untouched. */
+.ll-wrap { width: 100%; max-width: 900px; margin: 0 auto; position: relative; z-index: 10; }
+.ll-wrap [hidden] { display: none !important; }
+.ll-nav { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin: -10px 0 18px; flex-wrap: wrap; }
+.ll-back-link { display: inline-flex; align-items: center; gap: 8px; color: var(--cyan); text-decoration: none; border: 1px solid var(--line); border-radius: 999px; padding: 8px 14px; font-size: 1.05rem; letter-spacing: .4px; transition: border-color .16s, background .16s; }
+.ll-back-link:hover { border-color: var(--cyan); background: rgba(0,230,246,.08); }
+.ll-edition-badge { color: var(--amber); font-family: 'Press Start 2P', cursive; font-size: .48rem; letter-spacing: .5px; text-align: right; }
+.ll-hero { position: relative; overflow: hidden; border: 2px solid #5c3d73; border-radius: 18px; padding: clamp(22px, 5vw, 42px); margin-bottom: 20px; background: radial-gradient(ellipse at 82% 0%, rgba(255,47,146,.18), transparent 44%), linear-gradient(145deg, #271942 0%, #120c22 72%); box-shadow: 0 14px 30px rgba(0,0,0,.3), inset 0 0 0 1px rgba(255,255,255,.025); }
+.ll-hero::after { content: '♥'; position: absolute; right: 4%; top: -30px; color: rgba(255,47,146,.085); font-size: clamp(8rem, 22vw, 17rem); line-height: 1; transform: rotate(12deg); pointer-events: none; }
+.ll-eyebrow, .ll-section-kicker { display: block; color: var(--cyan); font-size: 1rem; letter-spacing: 2px; text-transform: uppercase; }
+.ll-hero h2 { position: relative; z-index: 1; color: #fff; font: 400 clamp(1.45rem, 5vw, 2.6rem)/1.45 'Press Start 2P', cursive; margin: 12px 0; text-shadow: 0 0 8px rgba(255,47,146,.6), 0 0 25px rgba(255,47,146,.25); }
+.ll-hero h2 span { color: var(--pink); }
+.ll-hero p { position: relative; z-index: 1; max-width: 620px; color: #e6dcef; font-size: clamp(1.1rem, 3vw, 1.4rem); margin: 0 0 18px; line-height: 1.35; }
+.ll-hero-stats { display: flex; flex-wrap: wrap; gap: 8px; position: relative; z-index: 1; }
+.ll-hero-stats span { color: var(--amber); border: 1px solid rgba(255,180,0,.34); background: rgba(0,0,0,.22); border-radius: 999px; padding: 5px 10px; font-size: .9rem; letter-spacing: 1px; }
+.ll-panel { border: 2px solid var(--line); border-radius: 14px; padding: clamp(18px, 4vw, 28px); margin: 0 0 20px; background: linear-gradient(180deg, rgba(28,19,54,.98), rgba(21,12,40,.98)); box-shadow: 0 8px 18px rgba(0,0,0,.22); }
+.ll-panel-heading { display: flex; justify-content: space-between; align-items: center; gap: 16px; margin-bottom: 18px; }
+.ll-panel-heading h3 { font: 400 clamp(.92rem, 3vw, 1.16rem)/1.6 'Press Start 2P', cursive; color: var(--cream); margin: 8px 0 0; }
+.ll-seal { width: 42px; height: 42px; display: grid; place-items: center; flex: 0 0 auto; border: 1px solid rgba(255,47,146,.55); border-radius: 50%; color: var(--pink); font-size: 1.5rem; box-shadow: 0 0 20px rgba(255,47,146,.17); }
+.ll-field { display: flex; flex-direction: column; gap: 7px; color: var(--cream); font-size: 1.05rem; }
+.ll-count-field { max-width: 280px; margin-bottom: 16px; }
+.ll-field select, .ll-field input { width: 100%; min-width: 0; background: #0b0713; color: var(--cream); border: 1px solid #4d3b67; border-radius: 8px; padding: 11px 13px; font: 400 1.15rem 'VT323', monospace; text-transform: none; }
+.ll-field select:focus, .ll-field input:focus { outline: 2px solid rgba(0,230,246,.4); border-color: var(--cyan); }
+.ll-player-fields { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; margin-bottom: 16px; }
+.ll-starter-field { max-width: 520px; margin-bottom: 20px; }
+.ll-starter-field small { color: var(--dim); font-size: .95rem; }
+.ll-primary-button, .ll-secondary-button, .ll-choice-button { font: 400 .68rem/1.6 'Press Start 2P', cursive; letter-spacing: .2px; text-align: center; }
+.ll-primary-button { width: 100%; border-color: var(--pink); color: #fff; background: linear-gradient(135deg, #a81960, #5d1748); padding: 16px 18px; box-shadow: 0 4px 0 #2a0c23, 0 0 22px rgba(255,47,146,.18); }
+.ll-primary-button:hover:not(:disabled) { background: linear-gradient(135deg, #d12678, #781958); box-shadow: 0 4px 0 #2a0c23, 0 0 28px rgba(255,47,146,.3); }
+.ll-secondary-button { border-color: var(--line); color: var(--cyan); background: #100a1f; padding: 10px 12px; }
+.ll-footnote { color: var(--dim); font-size: .95rem; line-height: 1.35; margin: 14px 0 0; }
+.ll-match { margin-bottom: 20px; }
+.ll-match-toolbar { display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 14px; }
+.ll-toolbar-left, .ll-toolbar-right { display: flex; align-items: center; gap: 9px; flex-wrap: wrap; }
+.ll-round-label { color: var(--amber); font: 400 .57rem/1.5 'Press Start 2P', cursive; padding: 9px 11px; border: 1px solid rgba(255,180,0,.4); border-radius: 999px; background: rgba(255,180,0,.055); }
+.ll-match-toolbar button { font-size: .52rem; padding: 8px 10px; }
+.ll-players { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 9px; margin-bottom: 13px; }
+.ll-player-chip { min-width: 0; padding: 11px 12px; border: 1px solid var(--line); border-radius: 10px; background: #100a1f; position: relative; }
+.ll-player-chip.is-current { border-color: var(--cyan); box-shadow: inset 0 0 0 1px rgba(0,230,246,.15), 0 0 12px rgba(0,230,246,.09); }
+.ll-player-chip.is-out { opacity: .52; filter: grayscale(.5); }
+.ll-player-chip.is-protected:not(.is-out)::after { content: 'PROTECTED'; position: absolute; top: 6px; right: 8px; color: var(--lime); font-size: .58rem; letter-spacing: .5px; }
+.ll-player-name { color: var(--cream); overflow-wrap: anywhere; font-size: 1.1rem; line-height: 1.1; }
+.ll-player-score { color: var(--amber); font-size: .9rem; margin-top: 5px; }
+.ll-player-state { color: var(--dim); font-size: .78rem; margin-top: 3px; }
+.ll-feedback { color: var(--cream); background: rgba(0,230,246,.055); border: 1px solid rgba(0,230,246,.19); border-radius: 10px; padding: 10px 13px; margin: 0 0 13px; font-size: 1.05rem; line-height: 1.3; }
+.ll-metrics { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 13px; }
+.ll-metric { background: rgba(0,0,0,.25); border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; text-align: center; }
+.ll-metric b { display: block; color: var(--cyan); font: 400 .49rem/1.6 'Press Start 2P', cursive; }
+.ll-metric span { display: block; color: var(--dim); font-size: .85rem; margin-top: 4px; }
+.ll-stage { border: 2px solid #3b2a50; border-radius: 14px; padding: clamp(17px, 4vw, 25px); background: radial-gradient(ellipse at 50% 0%, rgba(255,47,146,.07), transparent 60%), linear-gradient(180deg, #151024, #0e0919); margin-bottom: 13px; }
+.ll-stage h3 { color: var(--cream); font: 400 .8rem/1.6 'Press Start 2P', cursive; margin: 0 0 9px; }
+.ll-stage-copy { color: #bdb1cd; font-size: 1.02rem; line-height: 1.35; margin: 0 0 17px; }
+.ll-handoff { text-align: center; border-color: #61426f; padding: clamp(22px, 5vw, 34px); }
+.ll-handoff .ll-pass-icon { width: 58px; height: 58px; display: grid; place-items: center; margin: 0 auto 15px; border: 1px solid rgba(255,180,0,.45); border-radius: 50%; color: var(--amber); font-size: 1.8rem; box-shadow: 0 0 24px rgba(255,180,0,.14); }
+.ll-handoff h3 { font-size: clamp(.8rem, 3vw, 1rem); }
+.ll-turn-caption { color: var(--pink); font-size: 1.2rem; margin-bottom: 14px; }
+.ll-card-row { display: flex; justify-content: center; align-items: stretch; flex-wrap: wrap; gap: 13px; margin: 18px 0; }
+.ll-card-button { appearance: none; width: min(42vw, 190px); min-width: 138px; padding: 0; border: 0; background: transparent; box-shadow: none; text-transform: none; border-radius: 12px; color: inherit; font: inherit; letter-spacing: normal; }
+.ll-card-button:hover:not(:disabled) { transform: translateY(-5px) rotate(-1deg); box-shadow: none; }
+.ll-card-button:active:not(:disabled) { transform: translateY(-1px); box-shadow: none; }
+.ll-card-button:disabled { opacity: .38; filter: grayscale(.75); }
+.ll-card-face { --card-accent: var(--pink); position: relative; display: flex; flex-direction: column; justify-content: space-between; min-height: 220px; aspect-ratio: .72; overflow: hidden; padding: 13px 12px; border: 2px solid color-mix(in srgb, var(--card-accent), white 25%); border-radius: 12px; color: #20152a; background: linear-gradient(150deg, #fff9e8, #eedfc2 76%, #e5d0b2); box-shadow: 0 10px 18px rgba(0,0,0,.38), inset 0 0 0 4px rgba(255,255,255,.38); text-align: left; transition: transform .15s ease, box-shadow .15s ease; }
+.ll-card-face::before, .ll-card-face::after { content: '✦'; position: absolute; color: color-mix(in srgb, var(--card-accent), transparent 50%); font-size: 1.2rem; }
+.ll-card-face::before { left: 9px; bottom: 38px; }
+.ll-card-face::after { right: 9px; top: 42px; }
+.ll-card-face.tone-guard { --card-accent: #d38a17; }
+.ll-card-face.tone-spy { --card-accent: #5081bb; }
+.ll-card-face.tone-priest { --card-accent: #6d56a4; }
+.ll-card-face.tone-baron { --card-accent: #bd486f; }
+.ll-card-face.tone-handmaid { --card-accent: #318a72; }
+.ll-card-face.tone-prince { --card-accent: #bd6133; }
+.ll-card-face.tone-chancellor { --card-accent: #287e8c; }
+.ll-card-face.tone-king { --card-accent: #a97926; }
+.ll-card-face.tone-countess { --card-accent: #a45c89; }
+.ll-card-face.tone-princess { --card-accent: #d63375; }
+.ll-card-topline { display: flex; align-items: center; justify-content: space-between; color: var(--card-accent); font: 400 .47rem/1.5 'Press Start 2P', cursive; text-transform: uppercase; }
+.ll-card-number { font: 400 1.5rem/1 'Press Start 2P', cursive; color: var(--card-accent); text-shadow: 0 1px rgba(255,255,255,.55); }
+.ll-card-emblem { align-self: center; display: grid; place-items: center; width: 58px; height: 58px; border: 2px solid color-mix(in srgb, var(--card-accent), transparent 32%); border-radius: 50%; color: var(--card-accent); font: 400 1.25rem 'Press Start 2P', cursive; box-shadow: 0 0 0 5px rgba(255,255,255,.22), inset 0 0 14px color-mix(in srgb, var(--card-accent), transparent 86%); }
+.ll-card-title { position: relative; z-index: 1; color: #261833; font: 400 .66rem/1.55 'Press Start 2P', cursive; text-align: center; overflow-wrap: anywhere; }
+.ll-card-copy { color: #5b4d63; text-align: center; font-size: .83rem; line-height: 1.13; margin-top: 6px; }
+.ll-card-disabled-note { display: block; color: var(--red); font-size: .75rem; text-align: center; margin-top: 7px; }
+.ll-card-mini { display: inline-flex; align-items: center; gap: 7px; color: var(--amber); border: 1px solid rgba(255,180,0,.38); background: rgba(0,0,0,.22); border-radius: 8px; padding: 6px 9px; font-size: .82rem; margin: 2px 4px 2px 0; }
+.ll-choice-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 9px; margin-top: 14px; }
+.ll-choice-button { min-height: 46px; padding: 10px 11px; border-color: #58416d; color: var(--cream); background: #110a20; font-size: .55rem; }
+.ll-choice-button:hover:not(:disabled) { border-color: var(--cyan); color: var(--cyan); background: rgba(0,230,246,.07); }
+.ll-choice-button.ll-guess-choice { border-color: rgba(255,180,0,.35); color: var(--amber); }
+.ll-choice-button.ll-guess-choice:hover:not(:disabled) { border-color: var(--amber); background: rgba(255,180,0,.08); }
+.ll-choice-button.ll-self-choice { border-color: rgba(255,47,146,.45); color: #ff8cbd; }
+.ll-private-banner { border: 1px dashed rgba(255,180,0,.45); border-radius: 9px; padding: 10px 12px; color: var(--amber); background: rgba(255,180,0,.06); margin: 10px 0; font-size: .95rem; }
+.ll-private-card { display: flex; align-items: center; gap: 14px; padding: 12px; border: 1px solid var(--line); border-radius: 10px; background: rgba(0,0,0,.22); margin: 14px 0; }
+.ll-card-display { flex: 0 0 92px; width: 92px; }
+.ll-private-card .ll-card-face { width: 92px; min-height: 130px; padding: 8px; }
+.ll-private-card .ll-card-emblem { width: 34px; height: 34px; font-size: .7rem; }
+.ll-private-card .ll-card-number { font-size: .9rem; }
+.ll-private-card .ll-card-title { font-size: .43rem; }
+.ll-private-card .ll-card-copy { font-size: .65rem; }
+.ll-round-end { border-color: rgba(255,180,0,.55); text-align: center; }
+.ll-round-end .ll-result-title { color: var(--amber); font-size: clamp(.85rem, 3vw, 1.1rem); text-shadow: 0 0 10px rgba(255,180,0,.28); }
+.ll-winner-list { color: var(--cream); font-size: 1.12rem; margin: 8px 0; }
+.ll-result-actions { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; margin-top: 18px; }
+.ll-result-actions button { min-width: min(100%, 220px); }
+.ll-discard-panel { border: 1px solid var(--line); border-radius: 12px; padding: 15px; background: rgba(0,0,0,.18); margin-bottom: 13px; }
+.ll-discard-panel h4 { color: var(--cyan); font: 400 .56rem/1.5 'Press Start 2P', cursive; margin: 0 0 11px; }
+.ll-discard-list { display: flex; gap: 7px; overflow-x: auto; padding: 1px 1px 7px; }
+.ll-discard-item { flex: 0 0 auto; min-width: 126px; max-width: 175px; border: 1px solid var(--line); border-left: 3px solid var(--card-accent, var(--pink)); border-radius: 8px; background: #100a1f; padding: 7px 9px; }
+.ll-discard-item span { display: block; color: var(--cream); font-size: .93rem; }
+.ll-discard-item small { display: block; color: var(--dim); font-size: .75rem; line-height: 1.1; margin-top: 3px; }
+.ll-home-promo { border-color: rgba(255,47,146,.58); background: radial-gradient(ellipse at 50% 0%, rgba(255,47,146,.13), transparent 65%), linear-gradient(180deg, var(--panel), #150c28); }
+.ll-home-promo h2 { color: var(--pink); }
+.ll-home-promo p { color: var(--dim); margin: -12px 0 17px; }
+.ll-home-link { display: inline-flex; justify-content: center; align-items: center; width: 100%; padding: 15px 16px; border: 2px solid var(--pink); border-radius: 10px; color: #fff; background: linear-gradient(135deg, #a81960, #5d1748); font: 400 .64rem/1.6 'Press Start 2P', cursive; text-decoration: none; box-shadow: 0 4px 0 #2a0c23; }
+.ll-home-link:hover { background: linear-gradient(135deg, #d12678, #781958); box-shadow: 0 4px 0 #2a0c23, 0 0 20px rgba(255,47,146,.24); }
+.ll-rules { padding: 0; overflow: hidden; }
+.ll-rules summary { list-style: none; display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 18px 22px; cursor: pointer; color: var(--cyan); font: 400 .68rem/1.5 'Press Start 2P', cursive; }
+.ll-rules summary::-webkit-details-marker { display: none; }
+.ll-summary-mark { color: var(--amber); font: 400 1.4rem 'VT323', monospace; transition: transform .15s; }
+.ll-rules[open] .ll-summary-mark { transform: rotate(45deg); }
+.ll-rules-content { padding: 0 22px 22px; color: #c4b9d1; font-size: .97rem; line-height: 1.38; }
+.ll-rules-content p { margin: 0 0 12px; }
+.ll-rules-content strong { color: var(--cream); }
+.ll-rules-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; margin: 14px 0; }
+.ll-rules-grid article { display: flex; flex-direction: column; gap: 4px; padding: 10px 12px; border: 1px solid var(--line); border-radius: 8px; background: rgba(0,0,0,.16); }
+.ll-rules-grid b { color: var(--amber); font-size: .91rem; }
+.ll-rules-grid span { color: #bdb1cd; font-size: .86rem; line-height: 1.22; }
+.ll-rules-note { border-left: 3px solid var(--pink); padding: 8px 11px; background: rgba(255,47,146,.06); }
+.ll-accessible-live { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+
+@media (max-width: 600px) {
+    .ll-edition-badge { font-size: .39rem; }
+    .ll-player-fields, .ll-rules-grid { grid-template-columns: 1fr; }
+    .ll-metrics { gap: 5px; }
+    .ll-metric { padding: 8px 5px; }
+    .ll-metric b { font-size: .4rem; }
+    .ll-card-face { min-height: 194px; padding: 11px 9px; }
+    .ll-card-title { font-size: .57rem; }
+    .ll-card-copy { font-size: .75rem; }
+    .ll-match-toolbar { align-items: stretch; }
+    .ll-toolbar-right { margin-left: auto; }
+    .ll-match-toolbar button { font-size: .43rem; }
+}
+@media (max-width: 380px) {
+    .ll-card-row { gap: 8px; }
+    .ll-card-button { min-width: 128px; width: 43vw; }
+    .ll-card-face { min-height: 178px; }
+    .ll-hero-stats span { font-size: .75rem; }
+}
+@media (prefers-reduced-motion: reduce) {
+    .ll-back-link, .ll-card-face, .ll-rules summary { transition: none; }
+}
