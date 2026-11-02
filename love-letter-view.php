@@ -7,36 +7,44 @@
     <header class="ll-hero">
         <span class="ll-eyebrow">A quick game of risk, deduction &amp; royal intrigue</span>
         <h2 id="ll-page-title">LOVE <span>LETTER</span></h2>
-        <p>Carry your letter to the Princess. Read the room, protect your hand, and earn her favor.</p>
-        <div class="ll-hero-stats"><span>10–20 MIN</span><span>2–6 SUITORS</span><span>21 CHARACTER CARDS</span></div>
+        <p>Each player joins from their own device. Your hand is private to your seat, and the match is saved on this server so you can return later.</p>
+        <div class="ll-hero-stats"><span>10–20 MIN</span><span>2–6 PLAYERS</span><span>PRIVATE HANDS</span><span>SAVED SESSIONS</span></div>
     </header>
 
-    <section class="ll-panel ll-setup" id="ll-setup" aria-labelledby="ll-setup-title">
+    <section class="ll-panel ll-setup" id="ll-session-home" aria-labelledby="ll-setup-title">
         <div class="ll-panel-heading">
             <div>
-                <span class="ll-section-kicker">SET THE TABLE</span>
-                <h3 id="ll-setup-title">Who is courting the Princess?</h3>
+                <span class="ll-section-kicker">PLAY TOGETHER, EACH ON YOUR OWN DEVICE</span>
+                <h3 id="ll-setup-title">Create or join a session</h3>
             </div>
             <span class="ll-seal" aria-hidden="true">♥</span>
         </div>
-        <label class="ll-field ll-count-field" for="ll-player-count">
-            <span>Players</span>
-            <select id="ll-player-count">
-                <option value="2">2 players</option>
-                <option value="3">3 players</option>
-                <option value="4" selected>4 players</option>
-                <option value="5">5 players</option>
-                <option value="6">6 players</option>
-            </select>
-        </label>
-        <div class="ll-player-fields" id="ll-player-fields"></div>
-        <label class="ll-field ll-starter-field" for="ll-first-player">
-            <span>Who most recently hand-wrote a letter?</span>
-            <select id="ll-first-player"></select>
-            <small>That player takes the first turn.</small>
-        </label>
-        <button class="ll-primary-button" id="ll-start-game" type="button">Deal the first round</button>
-        <p class="ll-footnote">Pass-and-play on one device. Cards stay hidden during each handoff; pass the screen to the named player before revealing their turn.</p>
+        <div class="ll-session-options">
+            <form class="ll-session-form" id="ll-create-form">
+                <h4>Create a saved session</h4>
+                <label class="ll-field" for="ll-create-name"><span>Your player name</span><input id="ll-create-name" name="name" maxlength="18" autocomplete="nickname" required placeholder="e.g. Alex"></label>
+                <label class="ll-field" for="ll-create-capacity"><span>Players in this game</span><select id="ll-create-capacity" name="capacity"><option value="2">2 players</option><option value="3">3 players</option><option value="4" selected>4 players</option><option value="5">5 players</option><option value="6">6 players</option></select></label>
+                <button class="ll-primary-button" type="submit">Create session</button>
+                <p class="ll-footnote">You’ll get an 8-character invite code. The session stays saved on the server until its creator or an admin deletes it.</p>
+            </form>
+            <form class="ll-session-form" id="ll-join-form">
+                <h4>Join an existing session</h4>
+                <label class="ll-field" for="ll-join-code"><span>Session code</span><input id="ll-join-code" name="code" maxlength="8" autocapitalize="characters" autocomplete="off" required placeholder="ABCD2345"></label>
+                <label class="ll-field" for="ll-join-name"><span>Your player name</span><input id="ll-join-name" name="name" maxlength="18" autocomplete="nickname" required placeholder="e.g. Sam"></label>
+                <button class="ll-secondary-button ll-join-button" type="submit">Join session</button>
+                <p class="ll-footnote">Ask the session creator to share the code. Once the game starts, no more seats can join.</p>
+            </form>
+        </div>
+        <details class="ll-recover-details">
+            <summary>Resume the creator’s session on this device</summary>
+            <form class="ll-session-form ll-recover-form" id="ll-recover-form">
+                <label class="ll-field" for="ll-recover-code"><span>Session code</span><input id="ll-recover-code" name="code" maxlength="8" autocomplete="off" required></label>
+                <label class="ll-field" for="ll-recover-secret"><span>Creator recovery key</span><input id="ll-recover-secret" name="creatorSecret" autocomplete="off" required></label>
+                <button class="ll-secondary-button ll-join-button" type="submit">Recover creator access</button>
+                <p class="ll-footnote">The recovery key is shown once when you create the session. Save it somewhere safe; it can restore your creator seat and delete your session.</p>
+            </form>
+        </details>
+        <p class="ll-footnote" id="ll-home-message" role="status"></p>
     </section>
 
     <section class="ll-match" id="ll-match" hidden aria-live="polite"></section>

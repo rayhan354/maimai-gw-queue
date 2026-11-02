@@ -324,6 +324,10 @@ if (!is_array($myPlayers)) $myPlayers = [];
 $isAdmin = isset($_COOKIE['arcade_admin']) && $_COOKIE['arcade_admin'] === arcade_admin_cookie_token();
 $isOpen = is_arcade_open($state);
 
+// Love Letter uses its own encrypted, transaction-locked session store. It is
+// intentionally separate from the arcade queue state and uses the same admin identity.
+require_once __DIR__ . '/love-letter-server.php';
+
 // --- SECURITY PRE-CHECK ---
 if ($_SERVER['REQUEST_METHOD'] === 'GET' && !isset($_GET['api'])) {
     if (isset($_GET['cc'])) {
@@ -339,6 +343,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && !isset($_GET['api'])) {
 }
 
 // --- AJAX POLLING (GET) ---
+$requestedApi = $_GET['api'] ?? '';
+if (is_string($requestedApi) && str_starts_with($requestedApi, 'love-letter-')) {
+    ll_handle_api($isAdmin);
+}
 if (isset($_GET['api']) && $_GET['api'] === 'state') {
     $state['is_open'] = $isOpen; $state['config'] = $config;
     if (!empty($state['waitlist'])) foreach ($state['waitlist'] as $k => $p) $state['waitlist'][$k]['joined_formatted'] = date('d M, H:i', $p['joined_at']);

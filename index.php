@@ -12,6 +12,7 @@ $firstAct = null; foreach ($state['waitlist'] as $p) { if (empty($p['afk'])) { $
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="csrf-token" content="<?= htmlspecialchars(get_csrf_token(), ENT_QUOTES, 'UTF-8') ?>">
     <title><?= $view === 'love-letter' ? 'Love Letter — ' . $cap['site_title'] : $cap['site_title'] ?></title>
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22><?= $view === 'admin' ? $cap['admin_window_icon'] : $cap['window_icon'] ?></text></svg>">
     <link rel="stylesheet" href="style.css">
@@ -124,6 +125,12 @@ $firstAct = null; foreach ($state['waitlist'] as $p) { if (empty($p['afk'])) { $
                             <form method="POST" style="flex: 1;"><input type="hidden" name="csrf_token" value="<?= get_csrf_token() ?>"><input type="hidden" name="action" value="admin_logout"><input type="hidden" name="return_to" value="?view=admin"><button type="submit" style="width: 100%;"><?= $cap['admin_logout_btn'] ?></button></form>
                         </div>
                         <div class="flex" style="margin-top: 12px;"><a href="?view=password" style="flex:1; display:flex;"><button type="button" style="width: 100%; border-color: var(--cyan); color: var(--cyan);"><?= $cap['admin_change_pw_btn'] ?></button></a></div>
+                    </div>
+
+                    <div class="card operator" id="ll-admin-sessions">
+                        <h2 style="color:var(--pink);">Saved Love Letter Sessions</h2>
+                        <p style="font-size:.95rem; color:var(--dim); margin:-12px 0 14px;">Sessions are stored on this server until the creator or an admin deletes them.</p>
+                        <div id="ll-admin-session-list" class="ll-admin-session-list" role="status">Loading saved sessions…</div>
                     </div>
 
                     <!-- TIMER BLOCK WITH SUB-TEXTS -->
@@ -347,8 +354,10 @@ $firstAct = null; foreach ($state['waitlist'] as $p) { if (empty($p['afk'])) { $
     </script>
     <script src="script.js"></script>
     <?php if ($view === 'love-letter'): ?>
-    <script src="love-letter-engine.js"></script>
     <script src="love-letter.js"></script>
+    <?php endif; ?>
+    <?php if ($view === 'admin' && $isAdmin): ?>
+    <script src="love-letter-admin.js"></script>
     <?php endif; ?>
 
     <?php if ($view === 'terminal' && (!empty($cap['qr_link_1_url']) || !empty($cap['qr_link_2_url']))): ?>
