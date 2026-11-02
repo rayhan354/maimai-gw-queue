@@ -7,7 +7,7 @@
     <header class="ll-hero">
         <span class="ll-eyebrow">A quick game of risk, deduction &amp; royal intrigue</span>
         <h2 id="ll-page-title">LOVE <span>LETTER</span></h2>
-        <p>Each player joins from their own device. Your hand is private to your seat, and the match is saved on this server so you can return later.</p>
+        <p>Each player joins from their own device. Your hand is private to your seat. Sessions auto-delete after 30 minutes of inactivity unless the creator chooses to keep them indefinitely.</p>
         <div class="ll-hero-stats"><span>10–20 MIN</span><span>2–6 PLAYERS</span><span>PRIVATE HANDS</span><span>SAVED SESSIONS</span></div>
     </header>
 
@@ -24,8 +24,9 @@
                 <h4>Create a saved session</h4>
                 <label class="ll-field" for="ll-create-name"><span>Your player name</span><input id="ll-create-name" name="name" maxlength="18" autocomplete="nickname" required placeholder="e.g. Alex"></label>
                 <label class="ll-field" for="ll-create-capacity"><span>Players in this game</span><select id="ll-create-capacity" name="capacity"><option value="2">2 players</option><option value="3">3 players</option><option value="4" selected>4 players</option><option value="5">5 players</option><option value="6">6 players</option></select></label>
+                <label class="ll-retention-choice" for="ll-create-keep-indefinitely"><input id="ll-create-keep-indefinitely" type="checkbox" name="keepIndefinitely" value="1"><span><strong>Keep this session indefinitely</strong><small>Otherwise, it is automatically deleted after 30 minutes without a session action. You can change this later.</small></span></label>
                 <button class="ll-primary-button" type="submit">Create session</button>
-                <p class="ll-footnote">You’ll get an 8-character invite code. The session stays saved on the server until its creator or an admin deletes it.</p>
+                <p class="ll-footnote">You’ll get an 8-character invite code. You can change the save policy later; an admin can delete sessions at any time.</p>
             </form>
             <form class="ll-session-form" id="ll-join-form">
                 <h4>Join an existing session</h4>

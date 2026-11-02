@@ -23,7 +23,7 @@
                 return;
             }
             container.innerHTML = result.sessions.map(session => `<article class="ll-admin-session">
-                <div><strong>${escapeHtml(session.code)}</strong><span>${escapeHtml(session.status)} · ${session.seatCount}/${session.capacity} players${session.round ? ` · round ${session.round}` : ''}</span><small>${session.players.map(escapeHtml).join(', ')}</small></div>
+                <div><strong>${escapeHtml(session.code)}</strong><span>${escapeHtml(session.status)} · ${session.seatCount}/${session.capacity} players${session.round ? ` · round ${session.round}` : ''} · ${session.keepIndefinitely ? 'saved indefinitely' : '30-minute inactivity expiry'}</span><small>${session.players.map(escapeHtml).join(', ')}</small></div>
                 <button class="ll-secondary-button" type="button" data-delete-code="${escapeHtml(session.code)}">Delete</button>
             </article>`).join('');
         } catch (error) {

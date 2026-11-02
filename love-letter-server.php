@@ -7,6 +7,9 @@
 if (!defined('LOVE_LETTER_SESSIONS_FILE')) {
     define('LOVE_LETTER_SESSIONS_FILE', __DIR__ . '/love_letter_sessions.json');
 }
+if (!defined('LOVE_LETTER_INACTIVITY_TTL')) {
+    define('LOVE_LETTER_INACTIVITY_TTL', 30 * 60);
+}
 
 function ll_api_json($payload, $status = 200) {
     http_response_code($status);
@@ -38,6 +41,37 @@ function ll_new_room_code($sessions) {
     return $code;
 }
 
+function ll_room_keep_indefinitely($room) {
+    // Sessions created before this option existed retain their old indefinite behavior.
+    return !array_key_exists('keepIndefinitely', $room) || $room['keepIndefinitely'] === true;
+}
+
+function ll_prune_expired_sessions(&$sessions, $now = null) {
+    $now = $now ?? time();
+    $expired = 0;
+    foreach ($sessions as $code => $room) {
+        if (!is_array($room) || ll_room_keep_indefinitely($room)) continue;
+        $lastActivity = (int)($room['updatedAt'] ?? $room['createdAt'] ?? 0);
+        if ($lastActivity > 0 && ($now - $lastActivity) >= LOVE_LETTER_INACTIVITY_TTL) {
+            unset($sessions[$code]);
+            $expired++;
+        }
+    }
+    return $expired;
+}
+
+function ll_write_sessions_store($fp, $sessions) {
+    $payload = json_encode(['_encrypted' => arcade_encrypt_data(['sessions' => $sessions])], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
+    if ($payload === false) throw new RuntimeException('Could not encode saved game sessions.');
+    rewind($fp);
+    $written = false;
+    if (ftruncate($fp, 0)) $written = fwrite($fp, $payload);
+    if ($written !== strlen($payload) || !fflush($fp)) {
+        throw new RuntimeException('Could not save game sessions. Check directory permissions.');
+    }
+    @chmod(LOVE_LETTER_SESSIONS_FILE, 0600);
+}
+
 /** Execute a transaction while holding an exclusive lock across read/modify/write. */
 function ll_sessions_transaction($callback, $write = false) {
     $fp = @fopen(LOVE_LETTER_SESSIONS_FILE, 'c+');
@@ -65,17 +99,13 @@ function ll_sessions_transaction($callback, $write = false) {
                 throw new RuntimeException('The saved Love Letter session file is invalid; it was left unchanged.');
             }
         }
+        // Reads and mutations both sweep expired rooms, so the next app/API request
+        // after the deadline removes them even if nobody explicitly opens the room.
+        $expiredCount = ll_prune_expired_sessions($sessions);
+        if ($expiredCount > 0) ll_write_sessions_store($fp, $sessions);
         $result = $callback($sessions);
         if ($write) {
-            $payload = json_encode(['_encrypted' => arcade_encrypt_data(['sessions' => $sessions])], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
-            if ($payload === false) throw new RuntimeException('Could not encode saved game sessions.');
-            rewind($fp);
-            $written = false;
-            if (ftruncate($fp, 0)) $written = fwrite($fp, $payload);
-            if ($written !== strlen($payload) || !fflush($fp)) {
-                throw new RuntimeException('Could not save game sessions. Check directory permissions.');
-            }
-            @chmod(LOVE_LETTER_SESSIONS_FILE, 0600);
+            ll_write_sessions_store($fp, $sessions);
         }
         return $result;
     } finally {
@@ -416,6 +446,7 @@ function ll_public_session($room, $seatIndex, $isAdmin = false) {
         'ok' => true,
         'code' => $room['code'], 'status' => $room['status'], 'createdAt' => $room['createdAt'],
         'updatedAt' => $room['updatedAt'], 'capacity' => $room['capacity'], 'seatCount' => count($seats),
+        'keepIndefinitely' => ll_room_keep_indefinitely($room), 'inactivityTimeoutSeconds' => LOVE_LETTER_INACTIVITY_TTL,
         'seats' => $seats, 'mySeatIndex' => $seatIndex,
         'isCreator' => $seatIndex === ll_session_creator_index($room), 'isAdmin' => $isAdmin,
         'game' => null
@@ -465,6 +496,7 @@ function ll_room_summary($room) {
     return [
         'code' => $room['code'], 'status' => $room['status'], 'createdAt' => $room['createdAt'],
         'updatedAt' => $room['updatedAt'], 'capacity' => $room['capacity'], 'seatCount' => count($room['seats']),
+        'keepIndefinitely' => ll_room_keep_indefinitely($room),
         'players' => array_map(fn($seat) => $seat['name'], $room['seats']), 'round' => $room['game']['round'] ?? 0
     ];
 }
@@ -508,6 +540,7 @@ function ll_handle_api($isAdmin) {
                 $code = ll_new_room_code($sessions); $creatorSecret = ll_new_secret(); $playerToken = ll_new_secret();
                 $room = [
                     'code' => $code, 'createdAt' => time(), 'updatedAt' => time(), 'status' => 'lobby', 'capacity' => $capacity,
+                    'keepIndefinitely' => ($body['keepIndefinitely'] ?? false) === true,
                     'creatorSeat' => 0, 'creatorSecretHash' => hash('sha256', $creatorSecret),
                     'seats' => [['name' => $name, 'tokenHash' => hash('sha256', $playerToken), 'joinedAt' => time()]], 'game' => null
                 ];
@@ -541,6 +574,15 @@ function ll_handle_api($isAdmin) {
             $code = ll_session_by_code($sessions, $body['code'] ?? ''); $room = $sessions[$code];
             $token = (string)($body['playerToken'] ?? ''); $seatIndex = ll_find_player_seat($room, $token);
             if ($seatIndex === null) throw new DomainException('This device is not joined to that session.', 403);
+            if ($action === 'set-retention') {
+                if ($seatIndex !== ll_session_creator_index($room)) throw new DomainException('Only the session creator can change how long it is saved.', 403);
+                ll_require_creator($room, $body['creatorSecret'] ?? '');
+                if (!isset($body['keepIndefinitely']) || !is_bool($body['keepIndefinitely'])) throw new InvalidArgumentException('Choose whether to keep this session indefinitely.');
+                $room['keepIndefinitely'] = $body['keepIndefinitely'];
+                // Changing back to auto-expiry gives the creator a fresh 30-minute window.
+                $room['updatedAt'] = time(); $sessions[$code] = $room;
+                return ll_public_session($room, $seatIndex);
+            }
             if ($action === 'leave-lobby') {
                 if ($room['status'] !== 'lobby') throw new DomainException('A seat cannot be released after the game has started.');
                 if ($seatIndex === ll_session_creator_index($room)) throw new DomainException('The creator must delete the session to close it.');

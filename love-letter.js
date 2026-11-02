@@ -197,6 +197,27 @@
         return `<details class="ll-private-banner ll-recovery-key"><summary>Creator recovery key — save this for later</summary><code>${escapeHtml(saved.creatorSecret)}</code><button class="ll-secondary-button" type="button" data-action="copy-key">Copy recovery key</button><small>This key restores creator access from another browser. Treat it like a password.</small></details>`;
     }
 
+    function renderRetention() {
+        if (!snapshot) return '';
+        let status;
+        let actionLabel = '';
+        let nextValue = false;
+        if (snapshot.keepIndefinitely) {
+            status = 'This session is saved indefinitely.';
+            actionLabel = 'Enable 30-minute auto-delete';
+        } else {
+            const timeout = Number(snapshot.inactivityTimeoutSeconds || 1800);
+            const lastActivity = Number(snapshot.updatedAt || Math.floor(Date.now() / 1000));
+            const remaining = Math.max(0, Math.ceil(lastActivity + timeout - Date.now() / 1000));
+            const minutes = Math.floor(remaining / 60);
+            const seconds = remaining % 60;
+            status = `Auto-delete after 30 minutes without a session action · about ${minutes}m ${seconds}s remaining.`;
+            actionLabel = 'Keep indefinitely';
+            nextValue = true;
+        }
+        return `<div class="ll-retention-banner"><div><strong>${snapshot.keepIndefinitely ? 'Saved indefinitely' : '30-minute inactivity expiry'}</strong><span>${escapeHtml(status)}</span></div>${snapshot.isCreator ? `<button class="ll-secondary-button" type="button" data-action="set-retention" data-keep-indefinitely="${nextValue}" ${busy ? 'disabled' : ''}>${actionLabel}</button>` : ''}</div>`;
+    }
+
     function renderPlayers(game) {
         return `<div class="ll-players" aria-label="Players and favor tokens">${game.players.map(player => {
             const classes = ['ll-player-chip'];
@@ -313,7 +334,7 @@
             content = `${renderPlayers(game)}<div class="ll-feedback" role="status" aria-live="polite">${escapeHtml(game.lastEvent || '')}</div>${renderMetrics(game)}${renderFaceUpRemoved(game)}${phaseView}${renderDiscards(game)}`;
         }
         const secureNote = '<p class="ll-footnote">The server saves the game. Each device receives only public table state and its own player’s private cards. Do not share your private player link/token.</p>';
-        match.innerHTML = `${roomHeader}${matchMessage ? `<div class="ll-feedback ll-error-message" role="alert">${escapeHtml(matchMessage)}</div>` : ''}${content}${renderCreatorRecovery()}${secureNote}`;
+        match.innerHTML = `${roomHeader}${matchMessage ? `<div class="ll-feedback ll-error-message" role="alert">${escapeHtml(matchMessage)}</div>` : ''}${renderRetention()}${content}${renderCreatorRecovery()}${secureNote}`;
     }
 
     function render() {
@@ -332,7 +353,10 @@
     document.getElementById('ll-create-form').addEventListener('submit', event => {
         event.preventDefault();
         withForm(event.currentTarget, async form => {
-            const result = await apiPost('create', { name: form.get('name'), capacity: Number(form.get('capacity')) });
+            const result = await apiPost('create', {
+                name: form.get('name'), capacity: Number(form.get('capacity')),
+                keepIndefinitely: form.get('keepIndefinitely') === '1'
+            });
             enterRoom(result, result.creatorSecret);
             setHomeMessage('Session created. Save the invite code and creator recovery key.');
         });
@@ -406,6 +430,10 @@
         if (action === 'guess') fields.cardKey = button.dataset.cardKey;
         if (action === 'chancellor-order') fields.orderedIds = [button.dataset.firstId, button.dataset.secondId];
         if (action === 'start') fields.creatorSecret = saved.creatorSecret;
+        if (action === 'set-retention') {
+            fields.keepIndefinitely = button.dataset.keepIndefinitely === 'true';
+            fields.creatorSecret = saved.creatorSecret;
+        }
         await perform(action, fields);
     });
 

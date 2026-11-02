@@ -185,6 +185,16 @@
 .ll-admin-session button { flex: 0 0 auto; font-size: .46rem; }
 .ll-match-toolbar .ll-toolbar-right { justify-content: flex-end; }
 .ll-match-toolbar .ll-toolbar-right button { font-size: .44rem; }
+.ll-retention-choice { display: flex; align-items: flex-start; gap: 10px; border: 1px dashed rgba(255,180,0,.4); border-radius: 9px; padding: 11px 12px; background: rgba(255,180,0,.045); color: var(--cream); cursor: pointer; }
+.ll-retention-choice input { flex: 0 0 auto; width: 18px; height: 18px; margin: 2px 0 0; accent-color: var(--pink); }
+.ll-retention-choice span { display: flex; flex-direction: column; gap: 4px; }
+.ll-retention-choice strong { color: var(--amber); font-size: 1rem; }
+.ll-retention-choice small { color: var(--dim); font-size: .88rem; line-height: 1.25; }
+.ll-retention-banner { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; border: 1px solid rgba(255,180,0,.32); border-radius: 10px; padding: 10px 12px; margin: 0 0 13px; background: rgba(255,180,0,.045); }
+.ll-retention-banner > div { display: flex; flex-direction: column; gap: 3px; }
+.ll-retention-banner strong { color: var(--amber); font-size: 1rem; }
+.ll-retention-banner span { color: var(--dim); font-size: .9rem; }
+.ll-retention-banner .ll-secondary-button { flex: 0 0 auto; }
 
 @media (max-width: 600px) {
     .ll-session-options { grid-template-columns: 1fr; }

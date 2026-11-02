@@ -28,6 +28,16 @@ try {
     ll_test_assert(ll_forced_countess([ll_test_card('countess'), ll_test_card('prince')]), 'Countess is mandatory with King or Prince');
     ll_test_assert(!ll_forced_countess([ll_test_card('countess'), ll_test_card('guard')]), 'Countess is not mandatory with other cards');
 
+    $now = 1700000000;
+    $expiryCases = [
+        'expired' => ['keepIndefinitely' => false, 'updatedAt' => $now - LOVE_LETTER_INACTIVITY_TTL],
+        'recent' => ['keepIndefinitely' => false, 'updatedAt' => $now - LOVE_LETTER_INACTIVITY_TTL + 1],
+        'preserved' => ['keepIndefinitely' => true, 'updatedAt' => $now - LOVE_LETTER_INACTIVITY_TTL * 4],
+        'legacy' => ['updatedAt' => $now - LOVE_LETTER_INACTIVITY_TTL * 4]
+    ];
+    ll_test_assert(ll_prune_expired_sessions($expiryCases, $now) === 1, 'only auto-expiry sessions at or beyond 30 minutes are pruned');
+    ll_test_assert(!isset($expiryCases['expired']) && isset($expiryCases['recent']) && isset($expiryCases['preserved']) && isset($expiryCases['legacy']), 'indefinite and pre-feature sessions are retained');
+
     $targetGame = $round;
     $targetGame['currentIndex'] = 0;
     $targetGame['players'][1]['protected'] = true;
@@ -73,9 +83,15 @@ try {
     $aliceView = ll_public_session($privacyRoom, 0); $bobView = ll_public_session($privacyRoom, 1);
     ll_test_assert(isset($aliceView['game']['priestCard']) && !isset($bobView['game']['priestCard']), 'Priest reveal is only delivered to the actor');
 
-    ll_sessions_transaction(function (&$sessions) { $sessions['TEST2345'] = ['code' => 'TEST2345', 'creatorSecretHash' => hash('sha256', 'secret')]; }, true);
+    ll_sessions_transaction(function (&$sessions) {
+        $sessions['TEST2345'] = ['code' => 'TEST2345', 'creatorSecretHash' => hash('sha256', 'secret')];
+        $sessions['EXPIRE01'] = ['code' => 'EXPIRE01', 'keepIndefinitely' => false, 'updatedAt' => time() - LOVE_LETTER_INACTIVITY_TTL];
+        $sessions['KEEP0001'] = ['code' => 'KEEP0001', 'keepIndefinitely' => true, 'updatedAt' => time() - LOVE_LETTER_INACTIVITY_TTL * 2];
+    }, true);
     $loaded = ll_sessions_transaction(function (&$sessions) { return $sessions['TEST2345']['creatorSecretHash'] ?? null; });
     ll_test_assert($loaded === hash('sha256', 'secret'), 'session transactions persist and reload data');
+    $afterCleanup = ll_sessions_transaction(function (&$sessions) { return array_keys($sessions); });
+    ll_test_assert(!in_array('EXPIRE01', $afterCleanup, true) && in_array('KEEP0001', $afterCleanup, true), 'transaction reads persist cleanup of expired rooms and keep indefinite rooms');
     $rawStore = file_get_contents($store);
     ll_test_assert(strpos($rawStore, 'creatorSecretHash') === false && strpos($rawStore, 'TEST:') !== false, 'session transaction uses the configured storage serializer');
 
